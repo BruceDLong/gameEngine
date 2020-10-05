@@ -131,8 +131,39 @@ struct Triangle3D{
 
 struct Mesh{
     me Triangle3D[list]: tris
+    me Matrix4: location
+    me cdColor: color <- Styler.White
+    
+    void: makeCube() <-{
+	me Triangle3D: t1;
+        // SOUTH
+        t1.INIT(0.0, 0.0, 0.0,    0.0, 0.6, 0.0,    0.6, 0.6, 0.0);   tris.pushLast(t1)
+        t1.INIT(0.0, 0.0, 0.0,    0.6, 0.6, 0.0,    0.6, 0.0, 0.0);   tris.pushLast(t1)
+        // EAST
+        t1.INIT(0.6, 0.0, 0.0,    0.6, 0.6, 0.0,    0.6, 0.6, 0.6);   tris.pushLast(t1)
+        t1.INIT(0.6, 0.0, 0.0,    0.6, 0.6, 0.6,    0.6, 0.0, 0.6);   tris.pushLast(t1)
+        // NORTH
+        t1.INIT(0.6, 0.0, 0.6,    0.6, 0.6, 0.6,    0.0, 0.6, 0.6);   tris.pushLast(t1)
+        t1.INIT(0.6, 0.0, 0.6,    0.0, 0.6, 0.6,    0.0, 0.0, 0.6);   tris.pushLast(t1)
+        // WEST
+        t1.INIT(0.0, 0.0, 0.6,    0.0, 0.6, 0.6,    0.0, 0.6, 0.0);   tris.pushLast(t1)
+        t1.INIT(0.0, 0.0, 0.6,    0.0, 0.6, 0.0,    0.0, 0.0, 0.0);   tris.pushLast(t1)
+        // TOP
+        t1.INIT(0.0, 0.6, 0.0,    0.0, 0.6, 0.6,    0.6, 0.6, 0.6);   tris.pushLast(t1)
+        t1.INIT(0.0, 0.6, 0.0,    0.6, 0.6, 0.6,    0.6, 0.6, 0.0);   tris.pushLast(t1)
+        // BOTTOM
+        t1.INIT(0.6, 0.0, 0.6,    0.0, 0.0, 0.6,    0.0, 0.0, 0.0);   tris.pushLast(t1)
+        t1.INIT(0.6, 0.0, 0.6,    0.0, 0.0, 0.0,    0.6, 0.0, 0.0);   tris.pushLast(t1)
+        //print("NumMeshes:", mesh.tris.size(), "\n")
+	location.zero()
+	location.m00 <- 1
+	location.m11 <- 1
+	location.m22 <- 1
+    }
+    
     void: draw(their GUI_ctxt: cr, me double: interpolation) <- {
         //print("    DRAW MESH:\n")
+	cr.setColor(color)
         // Set up rotation matrices
         fTheta <+- 0.02  //1.0 * interpolation;
 
@@ -164,10 +195,7 @@ struct Mesh{
             matrixTimesTri(tri, TriRotatedZ, matRotZ)
             matrixTimesTri(TriRotatedZ, TriRotatedZX, matRotX)
 
-            TriXlated <-  TriRotatedZX
-            TriXlated.p1.z <+- 3.0
-            TriXlated.p2.z <+- 3.0
-            TriXlated.p3.z <+- 3.0
+	    matrixTimesTri(TriRotatedZX, TriXlated, location)
             matrixTimesTri(TriXlated, TriPrj, matProj)
 
 //print("AF_PROJ: "+TriPrj.stringify()+"\n")
@@ -186,6 +214,7 @@ struct Mesh{
             toDraw.INIT(TriPrj.p1.x, TriPrj.p1.y, TriPrj.p2.x, TriPrj.p2.y, TriPrj.p3.x, TriPrj.p3.y)
             toDraw.draw(cr)
         }
+	cr.strokeNow()
     }
 }
 
@@ -334,30 +363,18 @@ struct GamePlayScreen: inherits=GameMode{
     void: init(our GameLooper: ourLooper) <- {
         looper <- ourLooper
 
-        our Mesh:: mesh
-
-        me Triangle3D: t1;
-        // SOUTH
-        t1.INIT(0.0, 0.0, 0.0,    0.0, 0.6, 0.0,    0.6, 0.6, 0.0);   mesh.tris.pushLast(t1)
-        t1.INIT(0.0, 0.0, 0.0,    0.6, 0.6, 0.0,    0.6, 0.0, 0.0);   mesh.tris.pushLast(t1)
-        // EAST
-        t1.INIT(0.6, 0.0, 0.0,    0.6, 0.6, 0.0,    0.6, 0.6, 0.6);   mesh.tris.pushLast(t1)
-        t1.INIT(0.6, 0.0, 0.0,    0.6, 0.6, 0.6,    0.6, 0.0, 0.6);   mesh.tris.pushLast(t1)
-        // NORTH
-        t1.INIT(0.6, 0.0, 0.6,    0.6, 0.6, 0.6,    0.0, 0.6, 0.6);   mesh.tris.pushLast(t1)
-        t1.INIT(0.6, 0.0, 0.6,    0.0, 0.6, 0.6,    0.0, 0.0, 0.6);   mesh.tris.pushLast(t1)
-        // WEST
-        t1.INIT(0.0, 0.0, 0.6,    0.0, 0.6, 0.6,    0.0, 0.6, 0.0);   mesh.tris.pushLast(t1)
-        t1.INIT(0.0, 0.0, 0.6,    0.0, 0.6, 0.0,    0.0, 0.0, 0.0);   mesh.tris.pushLast(t1)
-        // TOP
-        t1.INIT(0.0, 0.6, 0.0,    0.0, 0.6, 0.6,    0.6, 0.6, 0.6);   mesh.tris.pushLast(t1)
-        t1.INIT(0.0, 0.6, 0.0,    0.6, 0.6, 0.6,    0.6, 0.6, 0.0);   mesh.tris.pushLast(t1)
-        // BOTTOM
-        t1.INIT(0.6, 0.0, 0.6,    0.0, 0.0, 0.6,    0.0, 0.0, 0.0);   mesh.tris.pushLast(t1)
-        t1.INIT(0.6, 0.0, 0.6,    0.0, 0.0, 0.0,    0.6, 0.0, 0.0);   mesh.tris.pushLast(t1)
-        //print("NumMeshes:", mesh.tris.size(), "\n")
-
-        mainScene.meshes.pushLast(mesh)
+        our Mesh:: mesh1
+	mesh1.makeCube()
+	mesh1.location.m32 <- 5
+	mesh1.color <- Styler.Blue
+        mainScene.meshes.pushLast(mesh1)
+	
+        our Mesh:: mesh2
+	mesh2.makeCube()
+	mesh2.location.m30 <- -0.6
+	mesh2.location.m32 <- 5
+	mesh2.color <- Styler.Red
+        mainScene.meshes.pushLast(mesh2)
 
         movingLeft <- false
         movingRight <- false
