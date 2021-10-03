@@ -133,9 +133,9 @@ struct Mesh{
     me Triangle3D[list]: tris
     me Matrix4: location
     me cdColor: color <- Styler.White
-    
+
     void: makeCube() <-{
-	me Triangle3D: t1;
+        me Triangle3D: t1;
         // SOUTH
         t1.INIT(0.0, 0.0, 0.0,    0.0, 0.6, 0.0,    0.6, 0.6, 0.0);   tris.pushLast(t1)
         t1.INIT(0.0, 0.0, 0.0,    0.6, 0.6, 0.0,    0.6, 0.0, 0.0);   tris.pushLast(t1)
@@ -155,15 +155,15 @@ struct Mesh{
         t1.INIT(0.6, 0.0, 0.6,    0.0, 0.0, 0.6,    0.0, 0.0, 0.0);   tris.pushLast(t1)
         t1.INIT(0.6, 0.0, 0.6,    0.0, 0.0, 0.0,    0.6, 0.0, 0.0);   tris.pushLast(t1)
         //print("NumMeshes:", mesh.tris.size(), "\n")
-	location.zero()
-	location.m00 <- 1
-	location.m11 <- 1
-	location.m22 <- 1
+        location.zero()
+        location.m00 <- 1
+        location.m11 <- 1
+        location.m22 <- 1
     }
-    
+
     void: draw(their GUI_ctxt: cr, me double: interpolation) <- {
         //print("    DRAW MESH:\n")
-	cr.setColor(color)
+        cr.setColor(color)
         // Set up rotation matrices
         fTheta <+- 0.02  //1.0 * interpolation;
 
@@ -195,7 +195,7 @@ struct Mesh{
             matrixTimesTri(tri, TriRotatedZ, matRotZ)
             matrixTimesTri(TriRotatedZ, TriRotatedZX, matRotX)
 
-	    matrixTimesTri(TriRotatedZX, TriXlated, location)
+            matrixTimesTri(TriRotatedZX, TriXlated, location)
             matrixTimesTri(TriXlated, TriPrj, matProj)
 
 //print("AF_PROJ: "+TriPrj.stringify()+"\n")
@@ -214,7 +214,7 @@ struct Mesh{
             toDraw.INIT(TriPrj.p1.x, TriPrj.p1.y, TriPrj.p2.x, TriPrj.p2.y, TriPrj.p3.x, TriPrj.p3.y)
             toDraw.draw(cr)
         }
-	cr.strokeNow()
+        cr.strokeNow()
     }
 }
 
@@ -364,16 +364,16 @@ struct GamePlayScreen: inherits=GameMode{
         looper <- ourLooper
 
         our Mesh:: mesh1
-	mesh1.makeCube()
-	mesh1.location.m32 <- 5
-	mesh1.color <- Styler.Blue
+        mesh1.makeCube()
+        mesh1.location.m32 <- 5
+        mesh1.color <- Styler.Blue
         mainScene.meshes.pushLast(mesh1)
-	
+
         our Mesh:: mesh2
-	mesh2.makeCube()
-	mesh2.location.m30 <- -0.6
-	mesh2.location.m32 <- 5
-	mesh2.color <- Styler.Red
+        mesh2.makeCube()
+        mesh2.location.m30 <- -0.6
+        mesh2.location.m32 <- 5
+        mesh2.color <- Styler.Red
         mainScene.meshes.pushLast(mesh2)
 
         movingLeft <- false
@@ -382,7 +382,6 @@ struct GamePlayScreen: inherits=GameMode{
     void: deInit() <- {}
 }
 struct GLOBAL{
-    their GUI_canvas: drawing_area
     me int: fontSize
     our GameLooper:: gameLooper
     our GameMenuScreen:: gameMenuScreen
@@ -415,8 +414,4 @@ struct GLOBAL{
             fullScreenModeOn()
         }
     }
-}
-
-struct APP{
-    my GUI: gui
 }
